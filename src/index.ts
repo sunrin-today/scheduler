@@ -20,12 +20,12 @@ const initializeBot = async () => {
 
 const bot = initializeBot();
 
-console.log('INTERVAL', env.INTERVAL);
+console.log('Environments', env);
 
 cron.schedule(env.INTERVAL, async () => {
   logger.info('일일 업로드 Cron Job이 실행됩니다');
   try {
-    const randomDelay = Math.floor(Math.random() * 11);
+    const randomDelay = Math.floor(Math.random() * env.RANDOM_DELAY);
     (await bot).postDaily({
       delay: randomDelay,
     });

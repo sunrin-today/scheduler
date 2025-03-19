@@ -1,7 +1,7 @@
 FROM node:23-bookworm-slim AS builder
 
 ENV TZ=Asia/Seoul
-RUN apt-get update && apt-get install -y tzdata \
+RUN apt-get update && apt-get install -y tzdata python3 python3-pip \
     && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone
 
@@ -16,7 +16,7 @@ RUN yarn build
 FROM node:23-bookworm-slim AS final
 
 ENV TZ=Asia/Seoul
-RUN apt-get update && apt-get install -y tzdata \
+RUN apt-get update && apt-get install -y tzdata python3 python3-pip \
     && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone
 
