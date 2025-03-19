@@ -1,7 +1,7 @@
-FROM node:20.18.1-alpine3.21 AS builder
+FROM node:23-bookworm-slim AS builder
 
 ENV TZ=Asia/Seoul
-RUN apk add --no-cache bash openssl tzdata libc6-compat \
+RUN apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone
 
@@ -13,15 +13,12 @@ RUN yarn install --frozen-lockfile
 COPY . .
 RUN yarn build
 
-FROM node:20.18.1-alpine3.21 AS final
+FROM node:23-bookworm-slim AS final
 
-ENV TZ=Asia/Seoul \
-        NODE_ENV=production
-RUN apk add --no-cache tzdata curl \
+ENV TZ=Asia/Seoul
+RUN apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
-    && addgroup -g 1001 app \
-    && adduser -u 1001 -G app -s /bin/sh -D app
+    && echo $TZ > /etc/timezone
 
 WORKDIR /app
 COPY --from=builder /app/node_modules node_modules
