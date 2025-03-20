@@ -10,6 +10,8 @@ COPY package.json yarn.lock ./
 RUN corepack enable && corepack prepare yarn --activate
 RUN yarn install --frozen-lockfile
 
+RUN pip3 install requests pillow
+
 COPY . .
 
 CMD ["yarn", "start"]
