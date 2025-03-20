@@ -20,7 +20,9 @@ const initializeBot = async () => {
 
 const bot = initializeBot();
 
-console.log('Environments', env);
+const { INSTAGRAM_PASSWORD, ...envForPrint } = env;
+
+console.log('Environments', envForPrint);
 
 cron.schedule(env.INTERVAL, async () => {
   logger.info('일일 업로드 Cron Job이 실행됩니다');
