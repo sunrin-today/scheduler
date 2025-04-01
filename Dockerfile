@@ -6,10 +6,10 @@ RUN apt-get update && apt-get install -y tzdata python3 python3-pip python3-requ
     && echo $TZ > /etc/timezone
 
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN corepack enable && corepack prepare yarn --activate
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-CMD ["yarn", "start"]
+CMD ["pnpm", "run", "start"]
