@@ -5,7 +5,6 @@ import { validateEnv } from './middleware/env';
 import { ImageService } from './service/image';
 import { InstagramService } from './service/instagram';
 import { InstagramBot } from './service/instagram-bot';
-import { sendWebhook } from './service/webhook';
 import { Logger } from './utils/logger';
 
 // Env가 제대로 설정되어 있는지 확인합니다
@@ -20,17 +19,6 @@ const initializeBot = async () => {
 };
 
 const bot = initializeBot();
-
-sendWebhook({
-  embeds: [
-    {
-      title: 'Instagram Bot 시작',
-      description: 'Instagram Bot이 성공적으로 시작되었습니다.',
-      color: 0x00ff00,
-      timestamp: new Date().toISOString(),
-    },
-  ],
-});
 
 const { INSTAGRAM_PASSWORD, ...envForPrint } = env;
 
