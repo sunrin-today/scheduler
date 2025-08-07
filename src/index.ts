@@ -22,7 +22,6 @@ const initializeBot = async () => {
 const bot = initializeBot();
 
 sendWebhook({
-  content: 'Instagram Bot이 시작되었습니다.',
   embeds: [
     {
       title: 'Instagram Bot 시작',
