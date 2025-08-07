@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { validateEnv } from './middleware/env';
 import { ImageService } from './service/image';
 import { InstagramService } from './service/instagram';
-import { InstagramBot } from './service/instagramBot';
+import { InstagramBot } from './service/instagram-bot';
 import { Logger } from './utils/logger';
 
 // Env가 제대로 설정되어 있는지 확인합니다

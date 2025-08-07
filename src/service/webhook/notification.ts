@@ -1,7 +1,4 @@
-import path from "path";
 import { sendWebhook } from "../webhook";
-import fs from 'fs';
-import { Logger } from "../../utils/logger";
 
 export async function WebhookPostNotification() {
     // 급식 API fetch
