@@ -1,7 +1,6 @@
 import { sendWebhook } from "../webhook";
 
 export async function WebhookPostNotification() {
-    // 급식 API fetch
     (await fetch('https://api.sunrin.kr/meal/today')).json().then((data) => {
         const response = data.data.meals;
         
