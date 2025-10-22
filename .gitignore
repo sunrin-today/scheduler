@@ -11,3 +11,9 @@ logs
 /build
 
 .DS_Store
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierignore
