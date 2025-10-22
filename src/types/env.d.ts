@@ -1,12 +1,12 @@
 declare namespace NodeJS {
-    interface ProcessEnv {
-        SCHOOL_NAME: string;
+  interface ProcessEnv {
+    SCHOOL_NAME: string;
 
-        INSTAGRAM_USERNAME: string;
-        INSTAGRAM_PASSWORD: string;
+    INSTAGRAM_USERNAME: string;
+    INSTAGRAM_PASSWORD: string;
 
-        INTERVAL: string;
+    INTERVAL: string;
 
-        DISCORD_WEBHOOK_URL: string;
-    }
+    DISCORD_WEBHOOK_URL: string;
+  }
 }

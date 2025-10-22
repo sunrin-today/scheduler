@@ -1,9 +1,10 @@
-import 'dotenv/config';
-import { validateEnv } from './middleware/env';
-import { ImageService } from './service/image';
-import { InstagramService } from './service/instagram';
-import { InstagramBot } from './service/instagram-bot';
-import { Logger } from './utils/logger';
+import { validateEnv } from "./middleware/env";
+import { ImageService } from "./service/image";
+import { InstagramService } from "./service/instagram";
+import { InstagramBot } from "./service/instagram-bot";
+import { Logger } from "./utils/logger";
+
+import "dotenv/config";
 
 // Env가 제대로 설정되어 있는지 확인합니다
 validateEnv();
@@ -21,12 +22,12 @@ const bot = initializeBot();
 // 업로드 스케줄링
 
 async function postManually() {
-  logger.info('수동 업로드가 실행됩니다');
+  logger.info("수동 업로드가 실행됩니다");
   try {
     (await bot).postDaily({ delay: 0 });
-    logger.info('수동 업로드가 성공적으로 실행되었습니다');
+    logger.info("수동 업로드가 성공적으로 실행되었습니다");
   } catch {
-    logger.error('수동 업로드가  실패했습니다');
+    logger.error("수동 업로드가  실패했습니다");
   }
 }
 
@@ -41,9 +42,9 @@ async function postManually() {
 //     }
 // });
 
-logger.info('Instagram Bot이 실행되었습니다');
+logger.info("Instagram Bot이 실행되었습니다");
 
-logger.info('로그인하는 중...');
+logger.info("로그인하는 중...");
 setTimeout(async () => {
   await postManually();
 }, 5000);

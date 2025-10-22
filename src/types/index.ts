@@ -1,3 +1,3 @@
 export interface DelayOptions {
-    delay?: number;
+  delay?: number;
 }

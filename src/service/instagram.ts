@@ -1,12 +1,13 @@
-import { IgApiClient } from 'instagram-private-api';
-import { Logger } from '../utils/logger';
-import { validateCaption } from '../middleware/caption';
+import { IgApiClient } from "instagram-private-api";
+
+import { validateCaption } from "../middleware/caption";
+import { Logger } from "../utils/logger";
 
 const logger = new Logger();
 
 export class InstagramService {
-  private username: string = '';
-  private password: string = '';
+  private username: string = "";
+  private password: string = "";
   private instagramInstance: IgApiClient;
 
   constructor() {
@@ -47,7 +48,7 @@ export class InstagramService {
       });
       logger.info(
         `사진 업로드 성공 (username: ${this.username}) ${
-          reason ? `- reason: ${reason}` : ''
+          reason ? `- reason: ${reason}` : ""
         }`
       );
     } catch (error) {

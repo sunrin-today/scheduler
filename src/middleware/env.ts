@@ -1,10 +1,10 @@
-import chalk from 'chalk';
+import chalk from "chalk";
 
 const requireEnv: ReadonlyArray<string> = [
-  'SCHOOL_NAME',
-  'INSTAGRAM_USERNAME',
-  'INSTAGRAM_PASSWORD',
-  'INTERVAL',
+  "SCHOOL_NAME",
+  "INSTAGRAM_USERNAME",
+  "INSTAGRAM_PASSWORD",
+  "INTERVAL",
 ];
 
 export function validateEnv() {
