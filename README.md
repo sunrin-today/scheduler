@@ -1,3 +1,5 @@
+![Cover Image](/assets/banner_rounded.png)
+
 # 선린투데이
 
 선린인터넷고등학교 급식 정보를 인스타그램에 자동으로 게시하는 프로젝트 입니다.
