@@ -1,36 +1,52 @@
-![Cover Image](https://github.com/sunrin-today/.github/blob/assets/cover.png)
+# 선린투데이
 
-# Sunrin Today
+선린인터넷고등학교 급식 정보를 인스타그램에 자동으로 게시하는 프로젝트 입니다.
 
-Sunrin Internet High School Lunch Service Scheduler
+인스타그램 [@sunrin_today](https://instagram.com/sunrin_today)에서 게시물을 확인하실 수 있습니다.
 
-<br>
+## 기능
 
-## Installation
+- 매일 아침 7시 급식 정보 게시
+- 매월 1일에 해당 월의 휴일 정보를 게시
 
-```sh
-git clone https://github.com/sunrin-today/scheduler
+## 개발자
+- [Sungju Cho](https://github.com/) - Node.js 스케줄링 시스템 구현
+- [Jeewon Kwon](https://github.com/jwkwon0817) - 파이썬 PIL 기반 동적 이미지 생성 구현
+
+## 설치 및 실행
+
+### 개발 환경
+
+```bash
+# 의존성 설치
+pnpm install
+
+# 개발 모드 실행
+pnpm run dev
+
+# 빌드
+pnpm run build
+
+# 프로덕션 실행
+pnpm start
 ```
 
-## Build
+### Docker
 
-```sh
-docker build . -t ghcr.io/sunrin-today/scheduler
+```bash
+# 이미지 빌드
+docker build . -t sunrin-today
+
+# 컨테이너 실행
+docker run sunrin-today
 ```
 
-## Start
+## 환경 설정
 
-```sh
-docker run ghcr.io/sunrin-today/scheduler
-```
+자세한 내용은 `.env.sample` 파일을 확인 해주세요.
 
-## Contributing
+## 라이선스
 
-1. Clone this repository.
-2. Create a new branch.
-3. Commit your code and push those commits to your own repository.
-4. Create a pull request.
+선린투데이 프로젝트는 [BSD-2-Clause](LICENSE) 라이센스를 채택하고 있습니다.
 
-## License
-
-[BSD-2-Clause](https://github.com/sunrin-today/scheduler/blob/main/LICENSE)
+자세한 내용은 [LICENSE](LICENSE) 파일을 확인 해주세요.
