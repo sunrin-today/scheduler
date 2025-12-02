@@ -31,6 +31,16 @@ async function postManually() {
   }
 }
 
+async function postMealManually() {
+  logger.info("급식 이미지 수동 업로드가 실행됩니다");
+  try {
+    await (await bot).postMealImage();
+    logger.info("급식 이미지 수동 업로드가 성공적으로 실행되었습니다");
+  } catch {
+    logger.error("급식 이미지 수동 업로드가 실패했습니다");
+  }
+}
+
 async function postRestManually() {
   logger.info("휴식 이미지 수동 업로드가 실행됩니다");
   try {
@@ -57,7 +67,9 @@ logger.info("Instagram Bot이 실행되었습니다");
 logger.info("로그인하는 중...");
 setTimeout(async () => {
   const mode = process.argv[2];
-  if (mode === "rest") {
+  if (mode === "meal") {
+    await postMealManually();
+  } else if (mode === "rest") {
     await postRestManually();
   } else {
     await postManually();

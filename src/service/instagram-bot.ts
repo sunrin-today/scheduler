@@ -70,7 +70,8 @@ export class InstagramBot {
     await this.postRestImage(date);
   }
 
-  private async postMealImage(date: Date) {
+  async postMealImage(date?: Date) {
+    const targetDate = date || new Date();
     try {
       const isExist = await fetch("https://api.sunrin.kr/meal/today")
         .then((res) => {
@@ -84,12 +85,12 @@ export class InstagramBot {
       if (!isExist) return;
 
       const mealImage = await this.imageService.generateMealImage();
-      const formattedDate = `${date.getFullYear()}년 ${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}월 ${String(date.getDate()).padStart(
+      const formattedDate = `${targetDate.getFullYear()}년 ${String(
+        targetDate.getMonth() + 1
+      ).padStart(2, "0")}월 ${String(targetDate.getDate()).padStart(
         2,
         "0"
-      )}일 ${getDayName(date, "ko")}요일`;
+      )}일 ${getDayName(targetDate, "ko")}요일`;
 
       await this.instagramService.publishPhoto({
         file: mealImage,
