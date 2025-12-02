@@ -3,9 +3,9 @@ import { DelayOptions } from "../types";
 import { getDayName, isFirstWeekdayOfMonth } from "../utils/date";
 import { Logger } from "../utils/logger";
 
-import { WebhookPostNotification } from "./webhook/notification";
 import { ImageService } from "./image";
 import { InstagramService } from "./instagram";
+import { WebhookPostNotification } from "./webhook/notification";
 
 const logger = new Logger();
 
@@ -45,12 +45,13 @@ export class InstagramBot {
     }
   }
 
-  private async postMonthlyRestImage(date: Date) {
+  async postRestImage(date?: Date) {
+    const targetDate = date || new Date();
     try {
       const restImage = await this.imageService.generateRestImage();
 
-      const monthDate = `${date.getFullYear()}년 ${String(
-        date.getMonth() + 1
+      const monthDate = `${targetDate.getFullYear()}년 ${String(
+        targetDate.getMonth() + 1
       ).padStart(2, "0")}월`;
 
       await this.instagramService.publishPhoto({
@@ -63,6 +64,10 @@ export class InstagramBot {
       logger.error(`이 달의 휴식 이미지 업로드 실패: ${error}`);
       throw error;
     }
+  }
+
+  private async postMonthlyRestImage(date: Date) {
+    await this.postRestImage(date);
   }
 
   private async postMealImage(date: Date) {
