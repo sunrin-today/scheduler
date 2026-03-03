@@ -8,6 +8,7 @@ logs
 
 .env
 
+/.pnpm-store
 /build
 
 .DS_Store

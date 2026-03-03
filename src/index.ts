@@ -15,29 +15,44 @@ validateEnv();
 const logger = new Logger();
 
 const initializeBot = async () => {
+  logger.info("[초기화] 봇 초기화 시작...");
   const instagramService = new InstagramService();
   const imageService = new ImageService();
-  return new InstagramBot(instagramService, imageService);
+  const bot = new InstagramBot(instagramService, imageService);
+  await bot.init();
+  logger.info("[초기화] 봇 초기화 완료");
+  return bot;
 };
-
-const bot = initializeBot();
 
 const { INSTAGRAM_PASSWORD, ...envForPrint } = env;
 
 console.log("Environments", envForPrint);
 
-cron.schedule(env.INTERVAL, async () => {
-  logger.info("일일 업로드 Cron Job이 실행됩니다");
+let bot: Awaited<ReturnType<typeof initializeBot>>;
+
+(async () => {
   try {
-    const randomDelay = Math.floor(Math.random() * env.RANDOM_DELAY);
-    (await bot).postDaily({
-      delay: randomDelay,
+    bot = await initializeBot();
+    logger.info(`[Cron] 스케줄 등록: ${env.INTERVAL} (${env.RANDOM_DELAY}분 랜덤 지연)`);
+
+    cron.schedule(env.INTERVAL, async () => {
+      logger.info("[Cron] 일일 업로드 Cron Job 실행");
+      try {
+        const randomDelay = Math.floor(Math.random() * env.RANDOM_DELAY);
+        logger.info(`[Cron] 랜덤 지연: ${randomDelay}분 적용`);
+        await bot.postDaily({ delay: randomDelay });
+        logger.info("[Cron] 일일 업로드 Cron Job 완료");
+      } catch (error) {
+        logger.error(`[Cron] 일일 업로드 Cron Job 실패: ${error}`);
+      }
     });
-    logger.info("일일 업로드 Cron Job이 성공적으로 실행되었습니다");
-  } catch {
-    logger.error("일일 업로드 Cron Job이 실패했습니다");
+
+    logger.info("[App] Instagram Bot 실행됨 - Cron 스케줄 대기 중");
+  } catch (error) {
+    logger.error(`[App] 봇 초기화 실패 - 프로세스 종료: ${error}`);
+    process.exit(1);
   }
-});
+})();
 
 // // 다음날 급식을 Discord Webhook으로 전송하는 스케줄링
 // cron.schedule('0 22 * * *', async () => {
@@ -49,5 +64,3 @@ cron.schedule(env.INTERVAL, async () => {
 //         logger.error('다음날 급식 전송 Cron Job이 실패했습니다');
 //     }
 // });
-
-logger.info("Instagram Bot이 실행되었습니다");

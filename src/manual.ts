@@ -12,9 +12,13 @@ validateEnv();
 const logger = new Logger();
 
 const initializeBot = async () => {
+  logger.info("[초기화] 봇 초기화 시작...");
   const instagramService = new InstagramService();
   const imageService = new ImageService();
-  return new InstagramBot(instagramService, imageService);
+  const bot = new InstagramBot(instagramService, imageService);
+  await bot.init();
+  logger.info("[초기화] 봇 초기화 완료");
+  return bot;
 };
 
 const bot = initializeBot();
@@ -62,16 +66,21 @@ async function postRestManually() {
 //     }
 // });
 
-logger.info("Instagram Bot이 실행되었습니다");
+logger.info("[App] 수동 업로드 모드 - 5초 후 실행");
 
-logger.info("로그인하는 중...");
 setTimeout(async () => {
-  const mode = process.argv[2];
-  if (mode === "meal") {
-    await postMealManually();
-  } else if (mode === "rest") {
-    await postRestManually();
-  } else {
-    await postManually();
+  try {
+    const mode = process.argv[2];
+    logger.info(`[App] 실행 모드: ${mode || "전체"}`);
+    if (mode === "meal") {
+      await postMealManually();
+    } else if (mode === "rest") {
+      await postRestManually();
+    } else {
+      await postManually();
+    }
+  } catch (error) {
+    logger.error(`[App] 수동 업로드 실패: ${error}`);
+    process.exit(1);
   }
 }, 5000);

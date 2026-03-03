@@ -16,32 +16,59 @@ export class InstagramBot {
   constructor(instagramService: InstagramService, imageService: ImageService) {
     this.instagramService = instagramService;
     this.imageService = imageService;
+  }
 
-    this.instagramService.login(
-      process.env.INSTAGRAM_USERNAME,
-      process.env.INSTAGRAM_PASSWORD
+  async init(): Promise<void> {
+    logger.info("[InstagramBot] 로그인 초기화 시작...");
+    await this.instagramService.login(
+      process.env.INSTAGRAM_USERNAME!,
+      process.env.INSTAGRAM_PASSWORD!
     );
+    logger.info("[InstagramBot] 로그인 초기화 완료");
   }
 
   async postDaily({ delay = 0 }: DelayOptions) {
+    const date = new Date();
+    logger.info(
+      `[postDaily] 시작 - delay: ${delay}분, date: ${date.toISOString()}`
+    );
+
     try {
-      const date = new Date();
+      await new Promise<void>((resolve, reject) => {
+        setTimeout(
+          async () => {
+            try {
+              logger.info(
+                `[postDaily] ${delay}분 대기 완료, 실제 업로드 작업 시작`
+              );
 
-      setTimeout(
-        async () => {
-          if (isFirstWeekdayOfMonth(date)) {
-            await this.postMonthlyRestImage(date);
-          }
+              if (isFirstWeekdayOfMonth(date)) {
+                logger.info("[postDaily] 월초 휴식 이미지 업로드 시작");
+                await this.postMonthlyRestImage(date);
+                logger.info("[postDaily] 월초 휴식 이미지 업로드 완료");
+              }
 
-          // 매일 트리거 되는 급식 이미지 업로드
-          await this.postMealImage(date);
+              logger.info("[postDaily] 급식 이미지 업로드 시작");
+              await this.postMealImage(date);
+              logger.info("[postDaily] 급식 이미지 업로드 완료");
 
-          WebhookPostNotification();
-        },
-        delay * 60 * 1000
-      );
+              logger.info("[postDaily] Webhook 알림 전송 시작");
+              await WebhookPostNotification();
+              logger.info("[postDaily] Webhook 알림 전송 완료");
+
+              logger.info("[postDaily] 모든 작업 완료");
+              resolve();
+            } catch (error) {
+              logger.error(`[postDaily] 작업 중 오류: ${error}`);
+              reject(error);
+            }
+          },
+          delay * 60 * 1000
+        );
+      });
     } catch (error) {
-      console.error(`일일 업로드 실패: ${error}`);
+      logger.error(`[postDaily] 일일 업로드 실패: ${error}`);
+      throw error;
     }
   }
 
@@ -73,16 +100,22 @@ export class InstagramBot {
   async postMealImage(date?: Date) {
     const targetDate = date || new Date();
     try {
+      logger.info("[postMealImage] 급식 API 존재 여부 확인 중...");
       const isExist = await fetch("https://api.sunrin.kr/meal/today")
         .then((res) => {
-          return res.status === 200; // 404면 true, 아니면 false 반환
+          const exists = res.status === 200;
+          logger.info(`[postMealImage] 급식 API 응답: status=${res.status}, exists=${exists}`);
+          return exists;
         })
         .catch((error) => {
-          console.error("Error:", error);
+          logger.error(`[postMealImage] 급식 API 조회 실패: ${error}`);
           return false;
         });
 
-      if (!isExist) return;
+      if (!isExist) {
+        logger.info("[postMealImage] 급식 정보 없음 - 업로드 스킵");
+        return;
+      }
 
       const mealImage = await this.imageService.generateMealImage();
       const formattedDate = `${targetDate.getFullYear()}년 ${String(

@@ -11,7 +11,7 @@ export function sendWebhook({
   name = WEBHOOK_AUTHOR_NAME,
   avatar_url = WEBHOOK_AUTHOR_AVATAR_URL,
 }: WebhookConfig) {
-  fetch(env.DISCORD_WEBHOOK_URL, {
+  return fetch(env.DISCORD_WEBHOOK_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

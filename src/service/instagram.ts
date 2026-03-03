@@ -15,17 +15,25 @@ export class InstagramService {
   }
 
   public async login(username: string, password: string): Promise<void> {
-    // 클래스 내부에서 사용하는 변수에 계정 정보를 저장합니다.
     this.username = username;
     this.password = password;
 
-    // 로그인을 위한 기기 생성
+    logger.info(`[Instagram] 로그인 시도 중 (username: ${this.username})`);
     this.instagramInstance.state.generateDevice(this.username);
+    logger.info("[Instagram] 기기 정보 생성 완료");
+
     try {
+      logger.info("[Instagram] account.login API 호출 중...");
       await this.instagramInstance.account.login(this.username, this.password);
-      logger.info(`인스타그램 로그인 성공 (username: ${this.username})`);
+      logger.info(`[Instagram] 로그인 성공 (username: ${this.username})`);
     } catch (error) {
-      logger.error(`인스타그램 로그인 실패 (username: ${this.username})`);
+      const errMsg =
+        error instanceof Error ? error.message : String(error);
+      const errStack = error instanceof Error ? error.stack : "";
+      logger.error(
+        `[Instagram] 로그인 실패 (username: ${this.username}) - ${errMsg}`
+      );
+      logger.error(`[Instagram] 상세 에러: ${errStack}`);
       throw error;
     }
   }
@@ -39,23 +47,29 @@ export class InstagramService {
     caption: string;
     reason?: string;
   }): Promise<void> {
-    if (!validateCaption(caption)) return;
+    if (!validateCaption(caption)) {
+      logger.warn("[Instagram] caption 검증 실패 - 업로드 스킵");
+      return;
+    }
 
     try {
+      logger.info(
+        `[Instagram] 사진 업로드 시작 ${reason ? `(reason: ${reason})` : ""}`
+      );
       await this.instagramInstance.publish.photo({
         file,
         caption,
       });
       logger.info(
-        `사진 업로드 성공 (username: ${this.username}) ${
+        `[Instagram] 사진 업로드 성공 (username: ${this.username}) ${
           reason ? `- reason: ${reason}` : ""
         }`
       );
     } catch (error) {
       logger.error(
-        `사진 업로드 실패 (username: ${this.username}) ${
-          reason ? `- reason: ${reason}` : error
-        }`
+        `[Instagram] 사진 업로드 실패 (username: ${this.username}) ${
+          reason ? `- reason: ${reason}` : ""
+        } - ${error}`
       );
       throw error;
     }
