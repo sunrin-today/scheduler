@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import { IgApiClient } from "instagram-private-api";
+import sizeOf from "image-size";
 
 import { validateCaption } from "../middleware/caption";
 import { Logger } from "../utils/logger";
@@ -17,6 +18,82 @@ export class InstagramService {
 
   constructor() {
     this.instagramInstance = new IgApiClient();
+    this.patchPhotoUpload();
+  }
+
+  /**
+   * instagram-private-api의 upload.photo는 X-Instagram-Rupload-Params에
+   * upload_media_height / upload_media_width를 포함하지 않지만,
+   * Instagram 최신 API는 이 두 필드를 필수로 요구한다 (412 Precondition Failed 원인).
+   * 누락된 필드를 추가하는 monkey-patch.
+   */
+  private patchPhotoUpload() {
+    const ig = this.instagramInstance;
+
+    (ig.upload as any).photo = async (options: {
+      file: Buffer;
+      uploadId?: string;
+      waterfallId?: string;
+      isSidecar?: boolean;
+    }) => {
+      let width = 1080;
+      let height = 1080;
+      try {
+        const dim = sizeOf(options.file);
+        width = dim.width ?? 1080;
+        height = dim.height ?? 1080;
+      } catch {
+        logger.warn("[Instagram] 이미지 크기 감지 실패, 기본값 1080x1080 사용");
+      }
+
+      const uploadId = options.uploadId ?? Date.now();
+      const random10 =
+        Math.floor(Math.random() * 9000000000) + 1000000000;
+      const name = `${uploadId}_0_${random10}`;
+      const contentLength = options.file.byteLength;
+
+      const ruploadParams: Record<string, string> = {
+        retry_context: JSON.stringify({
+          num_step_auto_retry: 0,
+          num_reupload: 0,
+          num_step_manual_retry: 0,
+        }),
+        media_type: "1",
+        upload_id: String(uploadId),
+        xsharing_user_ids: JSON.stringify([]),
+        image_compression: JSON.stringify({
+          lib_name: "moz",
+          lib_version: "3.1.m",
+          quality: "80",
+        }),
+        upload_media_height: String(height),
+        upload_media_width: String(width),
+      };
+      if (options.isSidecar) ruploadParams.is_sidecar = "1";
+
+      logger.info(
+        `[Instagram] 업로드 params 패치 적용 (${width}x${height}, ${contentLength}bytes)`
+      );
+
+      const { body } = await (ig as any).request.send({
+        url: `/rupload_igphoto/${name}`,
+        method: "POST",
+        headers: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          X_FB_PHOTO_WATERFALL_ID: options.waterfallId ?? "",
+          "X-Entity-Type": "image/jpeg",
+          Offset: 0,
+          "X-Instagram-Rupload-Params": JSON.stringify(ruploadParams),
+          "X-Entity-Name": name,
+          "X-Entity-Length": contentLength,
+          "Content-Type": "application/octet-stream",
+          "Content-Length": contentLength,
+          "Accept-Encoding": "gzip",
+        },
+        body: options.file,
+      });
+      return body;
+    };
   }
 
   private async saveState(): Promise<void> {
