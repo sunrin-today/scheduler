@@ -169,31 +169,42 @@ export class InstagramService {
       return;
     }
 
-    try {
-      logger.info(
-        `[Instagram] 사진 업로드 시작 ${reason ? `(reason: ${reason})` : ""}`
-      );
-      await this.instagramInstance.publish.photo({
-        file,
-        caption,
-      });
-      logger.info(
-        `[Instagram] 사진 업로드 성공 (username: ${this.username}) ${
-          reason ? `- reason: ${reason}` : ""
-        }`
-      );
-    } catch (error) {
-      logger.error(
-        `[Instagram] 사진 업로드 실패 (username: ${this.username}) ${
-          reason ? `- reason: ${reason}` : ""
-        } - ${error}`
-      );
-      if (error instanceof IgResponseError) {
-        logger.error(
-          `[Instagram] Instagram 응답 바디: ${JSON.stringify(error.response?.body ?? null)}`
+    const MAX_RETRIES = 3;
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        logger.info(
+          `[Instagram] 사진 업로드 시작 (시도 ${attempt}/${MAX_RETRIES})${reason ? ` (reason: ${reason})` : ""}`
         );
+        await this.instagramInstance.publish.photo({ file, caption });
+        logger.info(
+          `[Instagram] 사진 업로드 성공 (username: ${this.username})${reason ? ` - reason: ${reason}` : ""}`
+        );
+        return;
+      } catch (error) {
+        lastError = error;
+        const body =
+          error instanceof IgResponseError
+            ? JSON.stringify(error.response?.body ?? null)
+            : null;
+        const retriable =
+          error instanceof IgResponseError &&
+          (error.response?.body as any)?.debug_info?.retriable === true;
+
+        logger.error(
+          `[Instagram] 사진 업로드 실패 (시도 ${attempt}/${MAX_RETRIES}) - ${error}`
+        );
+        if (body) logger.error(`[Instagram] Instagram 응답 바디: ${body}`);
+
+        if (!retriable || attempt === MAX_RETRIES) break;
+
+        const delay = attempt * 15_000;
+        logger.info(`[Instagram] ${delay / 1000}초 후 재시도...`);
+        await new Promise((r) => setTimeout(r, delay));
       }
-      throw error;
     }
+
+    throw lastError;
   }
 }
