@@ -22,7 +22,7 @@
     "cron": "^3.1.6",
     "dotenv": "^16.4.7",
     "express": "^4.19.2",
-    "instagram-private-api": "^1.46.1",
+    "igramapi": "^1.48.3",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "request-promise": "^4.2.6",

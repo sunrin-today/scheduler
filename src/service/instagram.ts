@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { IgApiClient, IgResponseError } from "instagram-private-api";
+import { IgApiClient, IgResponseError } from "igramapi";
 
 import { validateCaption } from "../middleware/caption";
 import { Logger } from "../utils/logger";

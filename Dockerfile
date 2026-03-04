@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y tzdata python3 python3-pip python3-requ
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable && corepack prepare pnpm --activate
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 COPY . .
 
