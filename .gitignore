@@ -13,6 +13,8 @@ logs
 
 .DS_Store
 
+data/
+
 # ESLint
 .eslintcache
 
