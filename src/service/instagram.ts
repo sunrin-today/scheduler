@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 
 import { IgApiClient } from "instagram-private-api";
-import sizeOf from "image-size";
 
 import { validateCaption } from "../middleware/caption";
 import { Logger } from "../utils/logger";
@@ -36,15 +35,9 @@ export class InstagramService {
       waterfallId?: string;
       isSidecar?: boolean;
     }) => {
-      let width = 1080;
-      let height = 1080;
-      try {
-        const dim = sizeOf(options.file);
-        width = dim.width ?? 1080;
-        height = dim.height ?? 1080;
-      } catch {
-        logger.warn("[Instagram] 이미지 크기 감지 실패, 기본값 1080x1080 사용");
-      }
+      // generate_meal_image.py / generate_rest_image.py 모두 1024x1024 고정 출력
+      const width = 1024;
+      const height = 1024;
 
       const uploadId = options.uploadId ?? Date.now();
       const random10 =
