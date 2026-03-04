@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { IgApiClient } from "instagram-private-api";
+import { IgApiClient, IgResponseError } from "instagram-private-api";
 
 import { validateCaption } from "../middleware/caption";
 import { Logger } from "../utils/logger";
@@ -135,9 +135,13 @@ export class InstagramService {
     }
 
     try {
+      logger.info("[Instagram] preLoginFlow 실행 중...");
+      await this.instagramInstance.simulate.preLoginFlow();
       logger.info("[Instagram] account.login API 호출 중...");
       await this.instagramInstance.account.login(this.username, this.password);
       logger.info(`[Instagram] 로그인 성공 (username: ${this.username})`);
+      logger.info("[Instagram] postLoginFlow 실행 중...");
+      await this.instagramInstance.simulate.postLoginFlow();
       await this.saveState();
     } catch (error) {
       const errMsg =
@@ -184,6 +188,11 @@ export class InstagramService {
           reason ? `- reason: ${reason}` : ""
         } - ${error}`
       );
+      if (error instanceof IgResponseError) {
+        logger.error(
+          `[Instagram] Instagram 응답 바디: ${JSON.stringify(error.response?.body ?? null)}`
+        );
+      }
       throw error;
     }
   }
