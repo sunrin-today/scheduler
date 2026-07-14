@@ -141,7 +141,15 @@ export class InstagramService {
       await this.instagramInstance.account.login(this.username, this.password);
       logger.info(`[Instagram] 로그인 성공 (username: ${this.username})`);
       logger.info("[Instagram] postLoginFlow 실행 중...");
-      await this.instagramInstance.simulate.postLoginFlow();
+      try {
+        await this.instagramInstance.simulate.postLoginFlow();
+      } catch (error) {
+        const errMsg =
+          error instanceof Error ? error.message : String(error);
+        logger.warn(
+          `[Instagram] postLoginFlow 실패 (무시하고 진행): ${errMsg}`
+        );
+      }
       await this.saveState();
     } catch (error) {
       const errMsg =
