@@ -1,4 +1,6 @@
 export const env = {
+  API_BASE_URL: process.env.API_BASE_URL,
+
   SCHOOL_NAME: process.env.SCHOOL_NAME,
 
   INSTAGRAM_USERNAME: process.env.INSTAGRAM_USERNAME,

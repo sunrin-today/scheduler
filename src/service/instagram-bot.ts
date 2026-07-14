@@ -101,7 +101,7 @@ export class InstagramBot {
     const targetDate = date || new Date();
     try {
       logger.info("[postMealImage] 급식 API 존재 여부 확인 중...");
-      const isExist = await fetch("https://api.sunrin.kr/meal/today")
+      const isExist = await fetch(`${env.API_BASE_URL}/meal/today`)
         .then((res) => {
           const exists = res.status === 200;
           logger.info(`[postMealImage] 급식 API 응답: status=${res.status}, exists=${exists}`);
