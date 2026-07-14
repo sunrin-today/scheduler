@@ -8,10 +8,25 @@ const requireEnv: ReadonlyArray<string> = [
   "INTERVAL",
 ];
 
-export function validateEnv() {
-  for (const env of requireEnv) {
+const requireJobEnv: ReadonlyArray<string> = [
+  "API_BASE_URL",
+  "SCHOOL_NAME",
+  "INSTAGRAM_USERNAME",
+  "INSTAGRAM_PASSWORD",
+];
+
+function validate(required: ReadonlyArray<string>) {
+  for (const env of required) {
     if (!process.env[env]) {
       throw new Error(`환경변수 ${chalk.red(env)}이(가) 설정되지 않았습니다.`);
     }
   }
+}
+
+export function validateEnv() {
+  validate(requireEnv);
+}
+
+export function validateJobEnv() {
+  validate(requireJobEnv);
 }

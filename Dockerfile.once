@@ -1,0 +1,33 @@
+FROM node:23-bookworm-slim AS builder
+
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --frozen-lockfile
+
+COPY tsconfig.json ./
+COPY src ./src
+RUN pnpm run build
+
+FROM node:23-bookworm-slim AS runner
+
+ENV TZ=Asia/Seoul
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tzdata \
+    python3 \
+    python3-requests \
+    python3-pillow \
+    && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --frozen-lockfile --prod
+
+COPY --from=builder /app/dist ./dist
+COPY src/assets ./src/assets
+COPY src/scripts ./src/scripts
+
+CMD ["node", "dist/job.js"]
