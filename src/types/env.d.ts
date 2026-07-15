@@ -7,7 +7,9 @@ declare namespace NodeJS {
     INSTAGRAM_USERNAME: string;
     INSTAGRAM_PASSWORD: string;
 
-    INTERVAL: string;
+    INTERVAL?: string;
+
+    RANDOM_DELAY?: string;
 
     DISCORD_WEBHOOK_URL: string;
   }

@@ -5,7 +5,6 @@ const requireEnv: ReadonlyArray<string> = [
   "SCHOOL_NAME",
   "INSTAGRAM_USERNAME",
   "INSTAGRAM_PASSWORD",
-  "INTERVAL",
 ];
 
 const requireJobEnv: ReadonlyArray<string> = [
