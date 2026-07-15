@@ -33,7 +33,9 @@ let bot: Awaited<ReturnType<typeof initializeBot>>;
 (async () => {
   try {
     bot = await initializeBot();
-    logger.info(`[Cron] 스케줄 등록: ${env.INTERVAL} (${env.RANDOM_DELAY}분 랜덤 지연)`);
+    logger.info(
+      `[Cron] 스케줄 등록: ${env.INTERVAL} (${env.RANDOM_DELAY}분 랜덤 지연)`
+    );
 
     cron.schedule(env.INTERVAL, async () => {
       logger.info("[Cron] 일일 업로드 Cron Job 실행");

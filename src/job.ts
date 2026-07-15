@@ -1,4 +1,3 @@
-import { env } from "./constants/env";
 import { validateJobEnv } from "./middleware/env";
 import { ImageService } from "./service/image";
 import { InstagramService } from "./service/instagram";
@@ -24,10 +23,8 @@ const initializeBot = async () => {
 (async () => {
   try {
     const bot = await initializeBot();
-    const randomDelay = Math.floor(Math.random() * env.RANDOM_DELAY);
-
-    logger.info(`[Job] 일일 업로드 시작 (랜덤 지연: ${randomDelay}분)`);
-    await bot.postDaily({ delay: randomDelay });
+    logger.info("[Job] 일일 업로드 시작");
+    await bot.postDaily({ delay: 0 });
     logger.info("[Job] 일일 업로드 완료");
     process.exit(0);
   } catch (error) {
