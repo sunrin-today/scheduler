@@ -29,6 +29,7 @@ const initializeBot = async () => {
     process.exit(0);
   } catch (error) {
     logger.error(`[Job] 실행 실패: ${error}`);
+
     process.exit(1);
   }
 })();
